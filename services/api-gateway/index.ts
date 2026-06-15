@@ -12,13 +12,25 @@ app.use(cors({
     credentials: true,
 }));
 
-app.use(express.json());
 
 app.use(
     "/api/auth",
     createProxyMiddleware({
         target: "http://localhost:5001",
-        changeOrigin: true
+        changeOrigin: true,
+        on: {
+            proxyReq: (proxyReq, req, res) => {
+                console.log("Proxy Request Sent");
+            },
+
+            proxyRes: (proxyRes, req, res) => {
+                console.log("Proxy Response Received");
+            },
+
+            error: (err, req, res) => {
+                console.log("Proxy Error", err)
+            }
+        }
     })
 )
 
