@@ -14,7 +14,7 @@ export const userRegistration = async (req: Request, res: Response) => {
                 email
             }
         });
-        if (userExist) return res.status(409).json({ message: "User already exist" });
+        if (userExist) return res.status(409).json({ message: "Invalid credentials" });
 
         const hashPassword = await bcrypt.hash(password, 10);
         const newUser = await prisma.user.create({
@@ -67,7 +67,7 @@ export const userLogin = async (req: Request, res: Response) => {
 
         if (!passwordIsCorrect) {
             return res.status(401).json({
-                message: "Invalid credential"
+                message: "Invalid credentials"
             });
         };
 
@@ -117,3 +117,25 @@ export const userLogout = async (req: Request, res: Response) => {
         message: "User Logout"
     });
 };
+
+export const getUser = async (req: Request, res: Response) => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: (req as any).user.userId }
+        });
+
+        console.log(user);
+
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        res.status(200).json({
+            id: user.id,
+            name: user.name,
+            email: user.email
+        })
+
+    } catch (error) {
+        console.error("Error in GetUser", error);
+        res.status(500).json({ message: "Internal Error" });
+    }
+}
