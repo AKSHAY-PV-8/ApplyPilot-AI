@@ -12,7 +12,6 @@ export interface LoginData {
 }
 
 export const registerUser = async (data: RegisterData) => {
-    console.log("api", process.env.NEXT_PUBLIC_BASE_URL)
     const registerResponse = await api.post("/auth/register", data);
     return registerResponse.data;
 }
@@ -25,4 +24,9 @@ export const loginUser = async (data: LoginData) => {
 export const logoutUser = async () => {
     const logoutResponse = await api.post("/auth/logout");
     return logoutResponse.data;
+}
+
+export const getUser = async () => {
+    const getUserResponse = await api.get("/auth/user");
+    return getUserResponse.data;
 }

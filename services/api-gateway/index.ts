@@ -18,6 +18,7 @@ app.use(
     createProxyMiddleware({
         target: "http://localhost:5001",
         changeOrigin: true,
+        cookieDomainRewrite: "localhost",
         on: {
             proxyReq: (proxyReq, req, res) => {
                 console.log("Proxy Request Sent");

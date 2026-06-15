@@ -4,7 +4,6 @@ import prisma from "../utils/prisma.js";
 import jwt from "jsonwebtoken";
 
 export const userRegistration = async (req: Request, res: Response) => {
-
     try {
         const { name, email, password } = req.body;
 
@@ -87,6 +86,8 @@ export const userLogin = async (req: Request, res: Response) => {
             sameSite: "strict",
             maxAge: 24 * 60 * 60 * 1000,
         });
+
+        console.log("User Login Successfully");
 
 
         return res.status(200).json({
