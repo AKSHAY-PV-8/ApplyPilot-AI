@@ -1,38 +1,23 @@
 "use client";
-
-import { getUser } from "@/services/auth";
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react";
-
-interface User{
-  id: string,
-  name: string,
-  email: string
-}
+import { Navbar } from "@/features/marketing/components/Navbar";
+import { HeroSection } from "@/features/marketing/components/HeroSection";
+import { StatsSection } from "@/features/marketing/components/StatsSection";
+import { FeaturesSection } from "@/features/marketing/components/FeaturesSection";
+import { CtaSection } from "@/features/marketing/components/CtaSection";
+import { Footer } from "@/features/marketing/components/Footer";
+import { useCurrentUser } from "@/features/marketing/hooks/useCurrentUser";
 
 export default function HomePage() {
-  const router = useRouter();
+  const user = useCurrentUser();
 
-  const [user, setUser] = useState<User | null>(null);
-
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try{
-        const userResponse = await getUser();
-        console.log("user Response",userResponse)
-        setUser(userResponse)
-
-      }catch{
-        router.replace("/login")
-      }
-    }
-
-    fetchUser();
-  }, [router]);
   return (
-    <div className="">
-      <div className="">Home Page</div>
-    </div>
+    <>
+      <Navbar user={user} />
+      <HeroSection />
+      <StatsSection />
+      <FeaturesSection />
+      <CtaSection />
+      <Footer />
+    </>
   );
 }

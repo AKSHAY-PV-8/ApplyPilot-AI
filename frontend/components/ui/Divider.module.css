@@ -1,0 +1,2 @@
+.divider { display: flex; align-items: center; gap: 12px; margin: 1.5rem 0; color: var(--color-text-faint); font-size: 0.82rem; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--color-border-light); }

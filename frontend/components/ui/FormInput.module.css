@@ -1,0 +1,15 @@
+.group { margin-bottom: 1.1rem; }
+.labelRow { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.label { font-size: 0.84rem; font-weight: 600; color: var(--color-label); }
+.wrap { position: relative; }
+.icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--color-text-faint); pointer-events: none; display: flex; }
+.iconRight { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--color-text-faint); cursor: pointer; background: none; border: none; padding: 2px; display: flex; }
+.input {
+  width: 100%; padding: 0.75rem 2.75rem;
+  border: 1.5px solid var(--color-border); border-radius: 10px;
+  font-size: 0.95rem; color: var(--color-dark); background: #fff;
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: var(--font-body);
+}
+.input::placeholder { color: var(--color-text-placeholder); }
+.input:focus { border-color: var(--color-primary-light); box-shadow: 0 0 0 3px rgba(129,140,248,0.15); }

@@ -1,0 +1,14 @@
+.shell { min-height: 100svh; display: grid; grid-template-columns: 1fr 1fr; }
+
+.left { background: var(--color-dark); padding: clamp(2rem, 5vw, 4rem); display: flex; flex-direction: column; position: relative; overflow: hidden; }
+.left::before { content: ''; position: absolute; top: -80px; right: -80px; width: 340px; height: 340px; border-radius: 50%; background: rgba(79,70,229,0.18); pointer-events: none; }
+.left::after { content: ''; position: absolute; bottom: -60px; left: -60px; width: 240px; height: 240px; border-radius: 50%; background: rgba(124,58,237,0.12); pointer-events: none; }
+
+.right { display: flex; align-items: center; justify-content: center; padding: clamp(1.5rem, 4vw, 3rem); background: var(--color-bg); overflow-y: auto; }
+.formBox { width: 100%; max-width: 420px; }
+
+@media (max-width: 768px) {
+  .shell { grid-template-columns: 1fr; }
+  .left { display: none; }
+  .right { min-height: 100svh; }
+}

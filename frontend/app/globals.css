@@ -1,3 +1,35 @@
 @import "tailwindcss";
 
 
+:root {
+  --color-bg: #FAFAFA;
+  --color-dark: #1E2D40;
+  --color-primary: #4F46E5;
+  --color-primary-hover: #4338CA;
+  --color-primary-light: #818CF8;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-danger-dark: #DC2626;
+  --color-danger-bg: #FEF2F2;
+  --color-danger-border: #FECACA;
+  --color-text-muted: #64748B;
+  --color-text-faint: #94A3B8;
+  --color-text-placeholder: #CBD5E1;
+  --color-label: #374151;
+  --color-border: #E2E8F0;
+  --color-border-light: #E8EAF0;
+  --color-border-strong: #D1D5E8;
+  --color-surface-tint: #EEF2FF;
+  --color-surface-tint-border: #C7D2FE;
+  --color-surface-tint-strong: #A5B4FC;
+  --color-surface-hover: #F8FAFC;
+  --font-display: var(--font-syne), sans-serif;
+  --font-body: var(--font-inter), sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); background: var(--color-bg); color: var(--color-dark); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes float-y { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }

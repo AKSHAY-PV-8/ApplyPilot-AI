@@ -1,0 +1,21 @@
+.leftBody { flex: 1; display: flex; flex-direction: column; position: relative; z-index: 1; }
+.logo { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; color: #fff; display: flex; align-items: center; gap: 8px; }
+.logoDot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-primary-light); }
+.bodyContent { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.headline { font-family: var(--font-display); font-size: clamp(1.8rem, 3.2vw, 2.6rem); font-weight: 800; color: #fff; line-height: 1.18; margin-bottom: 1.25rem; }
+.headline em { color: var(--color-primary-light); font-style: normal; }
+.desc { font-size: 0.97rem; color: var(--color-text-faint); line-height: 1.7; max-width: 380px; margin-bottom: 2.5rem; }
+
+.testimonial { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.25rem 1.5rem; max-width: 400px; }
+.testimonialText { font-size: 0.92rem; color: #CBD5E1; line-height: 1.6; font-style: italic; margin-bottom: 1rem; }
+.testimonialAuthor { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 0.82rem; }
+.authorName { font-size: 0.85rem; color: #E2E8F0; font-weight: 600; }
+.authorRole { font-size: 0.78rem; color: var(--color-text-muted); }
+
+.forgotLink { font-size: 0.82rem; color: var(--color-primary); font-weight: 600; text-decoration: none; }
+.forgotLink:hover { text-decoration: underline; }
+
+.registerLink { text-align: center; margin-top: 1.5rem; font-size: 0.88rem; color: var(--color-text-muted); }
+.registerLink a { color: var(--color-primary); font-weight: 700; text-decoration: none; }
+.registerLink a:hover { text-decoration: underline; }
