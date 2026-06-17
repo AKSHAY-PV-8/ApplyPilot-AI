@@ -10,7 +10,6 @@ export function HeroSection() {
   return (
     <section className={styles.hero}>
       <div className={styles.left}>
-        <div className={styles.eyebrow}><span /> AI-Powered Job Applications</div>
         <h1 className={styles.heading}>
           <span className={`${styles.verb}${animating ? ` ${styles.exit}` : ""}`}>{slide.verb}</span>{" "}
           Your Dream Job <span className={styles.subWord}>{slide.sub}</span>

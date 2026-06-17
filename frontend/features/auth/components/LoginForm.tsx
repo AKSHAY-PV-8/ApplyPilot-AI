@@ -17,10 +17,6 @@ export function LoginForm() {
     <AuthLayout
       leftPanel={
         <div className={styles.leftBody}>
-          <div className={styles.logo}>
-            <span className={styles.logoDot} />
-            ApplyPilot AI
-          </div>
           <div className={styles.bodyContent}>
             <h1 className={styles.headline}>
               Your next job starts with a<br />
@@ -30,19 +26,6 @@ export function LoginForm() {
               ApplyPilot AI crafts tailored resumes and cover letters, tracks your applications, and
               prepares you for every interview — all in one place.
             </p>
-            <div className={styles.testimonial}>
-              <p className={styles.testimonialText}>
-                I landed 3 interviews in my first week using ApplyPilot. The AI-tailored resumes are
-                genuinely impressive.
-              </p>
-              <div className={styles.testimonialAuthor}>
-                <div className={styles.avatar}>RK</div>
-                <div>
-                  <div className={styles.authorName}>Rahul K.</div>
-                  <div className={styles.authorRole}>Software Engineer · Hired at Stripe</div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       }

@@ -18,7 +18,6 @@ export function Navbar({ user }: { user: CurrentUser | null }) {
   return (
     <nav className={styles.nav}>
       <Link href="/" className={styles.logo}>
-        <span className={styles.logoDot} />
         ApplyPilot AI
       </Link>
 
