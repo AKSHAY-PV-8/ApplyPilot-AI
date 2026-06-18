@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"  
+}
+
+model UserResume {
+  id String @id @default(cuid())
+  userId String @unique
+  s3Key String
+  extractedText String @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  generatedResume GeneratedResume?
+}
+
+model GeneratedResume {
+  id String @id @default(cuid())
+  userId String 
+  userResumeId   String   @unique
+  userResume     UserResume @relation(fields: [userResumeId], references: [id])
+  jobDescription String @db.Text
+  status JobStatus @default(PENDING)
+  atsScore Int
+  merits Json?
+  demerits Json?
+  shortlistChance String?
+  latexS3Key String?
+  pdfS3Key String?
+  errorMessage String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
