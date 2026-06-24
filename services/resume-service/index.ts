@@ -1,14 +1,33 @@
 import express from "express";
-import helmet from "helmet";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import multer from "multer";
+import resumeRoutes from "./routes/resume.routes.js";
 import { env } from "./config/env.js";
 
 
-const PORT = process.env.PORT || 5002;
-
 const app = express();
-app.use(helmet());
+
 app.use(express.json());
+app.use(cookieParser());
+app.use(
+    cors({
+        origin: "http://localhost:3000",
+        credentials: true,
+    })
+);
 
+app.use("/", resumeRoutes);
 
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (err instanceof multer.MulterError) {
+        return res.status(400).json({ message: err.message });
+    }
+    if (err) {
+        return res.status(400).json({ message: err.message || "Upload error" });
+    }
+    next();
+});
 
-app.listen(env.PORT, () => console.log(`server is running on ${PORT}`));
+const PORT = env.PORT || 5002;
+app.listen(PORT, () => console.log(`Resume Service is running on ${PORT}`));

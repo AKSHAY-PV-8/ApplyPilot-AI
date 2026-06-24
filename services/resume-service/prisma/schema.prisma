@@ -12,38 +12,25 @@ datasource db {
   provider = "postgresql"  
 }
 
-model UserResume {
-  id String @id @default(cuid())
-  userId String @unique
-  s3Key String
-  extractedText String @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Resume {
+  id               String       @id @default(uuid())
+  userId           String      
+  originalFileName String
+  originalFileKey  String       
+  originalFileType String       
 
-  generatedResume GeneratedResume?
+  parsedData       Json?
+  status           ResumeStatus @default(UPLOADED)
+
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([userId])
 }
 
-model GeneratedResume {
-  id String @id @default(cuid())
-  userId String 
-  userResumeId   String   @unique
-  userResume     UserResume @relation(fields: [userResumeId], references: [id])
-  jobDescription String @db.Text
-  status JobStatus @default(PENDING)
-  atsScore Int
-  merits Json?
-  demerits Json?
-  shortlistChance String?
-  latexS3Key String?
-  pdfS3Key String?
-  errorMessage String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-enum JobStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
+enum ResumeStatus {
+  UPLOADED
+  PARSING
+  PARSED
   FAILED
 }
