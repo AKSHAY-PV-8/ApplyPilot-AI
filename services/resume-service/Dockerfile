@@ -3,8 +3,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
 RUN npx prisma generate
+RUN npm run build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
@@ -12,7 +12,7 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/dist/prisma.config.js ./prisma.config.js
-COPY --from=builder /app/dist/generated ./dist/generated
-EXPOSE 5001
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+COPY --from=builder /app/generated ./generated
+EXPOSE 5002
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]

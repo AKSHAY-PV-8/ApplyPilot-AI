@@ -16,7 +16,7 @@ app.use(cors({
 app.use(
     "/api/auth",
     createProxyMiddleware({
-        target: "http://auth-service:5001",//localhost
+        target: "http://auth-service:5001", //localhost
         changeOrigin: true,
         cookieDomainRewrite: "localhost",
         on: {
@@ -36,13 +36,13 @@ app.use(
 )
 
 
-// app.use(
-//     "/api/resume",
-//     createProxyMiddleware({
-//         target: "http://localhost:5002",
-//         changeOrigin: true,
-//         cookieDomainRewrite: "localhost",
-//     })
-// )
+app.use(
+    "/api/resume",
+    createProxyMiddleware({
+        target: "http://resume-service:5002",
+        changeOrigin: true,
+        cookieDomainRewrite: "localhost",
+    })
+)
 
 app.listen(5000, () => console.log(`API_Gateway is running on 5000`));

@@ -51,6 +51,7 @@ services:
       DATABASE_URL: ${AUTH_DATABASE_URL}
       PORT: 5001
       JWT_SECRET: ${JWT_SECRET} 
+      NODE_ENV: ${NODE_ENV}
     ports:
       - "5001:5001"
     depends_on:
@@ -58,26 +59,26 @@ services:
     networks:
       - applypilot-network
 
-  # resume-service:
-  #   build:
-  #     context: ./services/resume-service
-  #     dockerfile: Dockerfile
-  #   container_name: applypilot-resume
-  #   restart: unless-stopped
-  #   environment:
-  #     DATABASE_URL: ${RESUME_DATABASE_URL}
-  #     MINIO_ENDPOINT: http://minio:9000    
-  #     MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
-  #     MINIO_BUCKET: resumes
-  #     JWT_SECRET: ${JWT_SECRET}
-  #     PORT: 3002
-  #   ports:
-  #     - "3002:3002"
-  #   depends_on:
-  #     - postgres
-  #     - minio
-  #   networks:
-  #     - applypilot-network
+  resume-service:
+    build:
+      context: ./services/resume-service
+      dockerfile: Dockerfile
+    container_name: applypilot-resume
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${RESUME_DATABASE_URL}
+      # MINIO_ENDPOINT: http://minio:9000    
+      # MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      # MINIO_BUCKET: resumes
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: 5002
+    ports:
+      - "5002:5002"
+    depends_on:
+      - postgres
+      # - minio
+    networks:
+      - applypilot-network
 
   api-gateway:
     build:
@@ -87,7 +88,7 @@ services:
     restart: unless-stopped
     environment:
       AUTH_SERVICE_URL: http://auth-service:5001
-      # RESUME_SERVICE_URL: http://resume-service:3002
+      RESUME_SERVICE_URL: http://resume-service:5002
       JWT_SECRET: ${JWT_SECRET}
       PORT: 5000
     ports:
