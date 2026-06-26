@@ -16,16 +16,16 @@ app.use(cors({
 app.use(
     "/api/auth",
     createProxyMiddleware({
-        target: "http://auth-service:5001", //localhost
+        target: "http://localhost:5001", //localhost, auth-service
         changeOrigin: true,
         cookieDomainRewrite: "localhost",
         on: {
             proxyReq: (proxyReq, req, res) => {
-                console.log("Proxy Request Sent");
+                console.log("Proxy Auth-service Request Sent");
             },
 
             proxyRes: (proxyRes, req, res) => {
-                console.log("Proxy Response Received");
+                console.log("Proxy Auth-service Response Received");
             },
 
             error: (err, req, res) => {
@@ -39,9 +39,22 @@ app.use(
 app.use(
     "/api/resume",
     createProxyMiddleware({
-        target: "http://resume-service:5002",
+        target: "http://localhost:5002",//resume-service
         changeOrigin: true,
         cookieDomainRewrite: "localhost",
+        on: {
+            proxyReq: (proxyReq, req, res) => {
+                console.log("Proxy Resume-service Request Sent");
+            },
+
+            proxyRes: (proxyRes, req, res) => {
+                console.log("Proxy Resume-service Response Received");
+            },
+
+            error: (err, req, res) => {
+                console.log("Proxy Error", err)
+            }
+        }
     })
 )
 

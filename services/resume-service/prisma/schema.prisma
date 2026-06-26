@@ -12,25 +12,13 @@ datasource db {
   provider = "postgresql"  
 }
 
-model Resume {
-  id               String       @id @default(uuid())
-  userId           String      
-  originalFileName String
-  originalFileKey  String       
-  originalFileType String       
-
-  parsedData       Json?
-  status           ResumeStatus @default(UPLOADED)
-
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-
-  @@index([userId])
-}
-
-enum ResumeStatus {
-  UPLOADED
-  PARSING
-  PARSED
-  FAILED
+model ResumeFile {
+  id           String   @id @default(uuid())
+  userId       String
+  s3Key        String   
+  originalName String
+  mimeType     String
+  sizeBytes    Int
+  status       String   @default("uploaded")
+  createdAt    DateTime @default(now())
 }

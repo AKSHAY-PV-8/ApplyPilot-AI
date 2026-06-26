@@ -12,5 +12,6 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "skipLibCheck": true
-  }
+  },
+   "include": ["./**/*"]
 }

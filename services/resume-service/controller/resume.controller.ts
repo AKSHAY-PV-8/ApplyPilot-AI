@@ -1,47 +1,43 @@
 import type { Request, Response } from "express";
-// import { randomUUID } from "crypto";
-// import { uploadToS3 } from "../utils/s3.js";
-import prisma from "../utils/prisma.js"; 
+import { BUCKET_NAME, minioClient } from "../config/storage.js";
+import { v4 as uuid } from "uuid";
+import prisma from "../utils/prisma.js";
 
-// const MIME_TO_TYPE: Record<string, string> = {
-//     "application/pdf": "pdf",
-//     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
-// };
 
 export const uploadResume = async (req: Request, res: Response) => {
-    // try {
-    //     const file = req.file;
-    //     const userId = (req as any).user?.userId;
+    try {
+        console.log("hitting api")
+        const file = req.file;
+        if (!file) return res.status(400).json({ error: "No file provided" });
 
-    //     if (!file) {
-    //         return res.status(400).json({ message: "No file uploaded" });
-    //     }
+        const userId = req.user?.userId.toString();
+        if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-    //     const fileType = MIME_TO_TYPE[file.mimetype];
-    //     const s3Key = `resumes/${userId}/${randomUUID()}-${file.originalname}`;
+        const fileKey = `${userId}/${uuid()}-${file.originalname}`;
 
-    //     await uploadToS3(file.buffer, s3Key, file.mimetype);
+        await minioClient.putObject(
+            BUCKET_NAME,
+            fileKey,
+            file.buffer,
+            file.size,
+            { "Content-Type": file.mimetype }
+        );
 
-    //     const resume = await prisma.resume.create({
-    //         data: {
-    //             userId,
-    //             originalFileName: file.originalname,
-    //             originalFileKey: s3Key,
-    //             originalFileType: fileType,
-    //             status: "UPLOADED",
-    //         },
-    //     });
+        const resumeFile = await prisma.resumeFile.create({
+            data: {
+                userId,
+                s3Key: fileKey,
+                originalName: file.originalname,
+                mimeType: file.mimetype,
+                sizeBytes: file.size,
+                status: "uploaded",
+            },
+        })
+        console.log("file successfully uploader");
+        res.json({ success: true, fileId: resumeFile.id });
 
-    //     return res.status(201).json({
-    //         message: "Resume uploaded successfully",
-    //         resume: {
-    //             id: resume.id,
-    //             fileName: resume.originalFileName,
-    //             status: resume.status,
-    //         },
-    //     });
-    // } catch (error) {
-    //     console.error("Resume Upload Error:", error);
-    //     return res.status(500).json({ message: "Internal error" });
-    // }
-};
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Upload failed" });
+    }
+}
