@@ -1,4 +1,3 @@
-// features/dashboard/DashboardPage.tsx  (replace your current file)
 "use client";
 
 import { useState } from "react";
@@ -10,8 +9,8 @@ import { generateApi } from "@/services/generateApi";
 
 interface UploadedFile {
   id: string;
-  s3Key: string;         
-  originalName: string;  
+  s3Key: string;
+  originalName: string;
 }
 
 type Step = "upload" | "describe" | "generating";
@@ -42,9 +41,10 @@ export default function DashboardPage() {
     setUploading(true);
     try {
       const res = await resumeApi.upload(file);
+      console.log("s3", res.data.s3Key);
       setUploadedFile({
         id: res.data.fileId,
-        s3Key: "",          
+        s3Key: res.data.s3Key,
         originalName: file.name,
       });
       setStep("describe");
@@ -68,6 +68,7 @@ export default function DashboardPage() {
         s3Key: uploadedFile.s3Key,
         jobDescription: jobDescription.trim(),
       });
+      console.log("jobID",res.data.jobId)
       setJobId(res.data.jobId);
       setStep("generating");
     } catch (err: unknown) {
@@ -271,10 +272,10 @@ export default function DashboardPage() {
               <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <div
                   className={`ap-stepper-item ${i === stepIndex
-                      ? "active"
-                      : i < stepIndex
-                        ? "completed"
-                        : "pending"
+                    ? "active"
+                    : i < stepIndex
+                      ? "completed"
+                      : "pending"
                     }`}
                 >
                   <s.icon size={13} />

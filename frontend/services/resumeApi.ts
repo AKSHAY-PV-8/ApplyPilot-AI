@@ -12,8 +12,8 @@ export interface ResumeFile {
 export const resumeApi = {
   upload: (file: File) => {
     const formData = new FormData();
-    formData.append("resume", file); 
-    return api.post<{ success: boolean; fileId: string }>("/resume/upload", formData, {
+    formData.append("resume", file);
+    return api.post<{ success: boolean; fileId: string; s3Key: string; originalName: string }>("/resume/upload", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
   },

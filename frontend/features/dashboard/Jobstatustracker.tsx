@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Loader2, CheckCircle2, XCircle, Download, RefreshCcw } from "lucide-react";
-// import { generateApi, JobStatusResponse } from "@/lib/api";
+import { generateApi, JobStatusResponse } from "@/services/generateApi";
 
 interface Props {
   jobId: string;
@@ -18,48 +18,58 @@ const pipelineSteps = [
 ];
 
 export default function JobStatusTracker({ jobId, onReset }: Props) {
-//   const [status, setStatus] = useState<JobStatusResponse | null>(null);
+  const [status, setStatus] = useState<JobStatusResponse | null>(null);
   const [pollError, setPollError] = useState("");
   const [activeStep, setActiveStep] = useState(0);
   const [elapsed, setElapsed] = useState(0);
 
   const poll = useCallback(async () => {
-    // try {
-    //   const res = await generateApi.status(jobId);
-    //   setStatus(res.data);
-    // } catch {
-    //   setPollError("Failed to check generation status.");
-    // }
+    try {
+      const res = await generateApi.status(jobId);
+      setStatus(res.data);
+      return res.data;
+    } catch {
+      setPollError("Failed to check generation status.");
+      return null;
+    }
   }, [jobId]);
 
-  // Polling
   useEffect(() => {
-    // poll();
-    // const id = setInterval(() => {
-    //   if (status?.status === "done" || status?.status === "failed") {
-    //     clearInterval(id);
-    //     return;
-    //   }
-    //   poll();
-    // }, POLL_INTERVAL);
-    // return () => clearInterval(id);
-  }, [poll, status?.status]);
+    let cancelled = false;
+    let timeoutId: ReturnType<typeof setTimeout>;
 
-  // Elapsed timer
-//   useEffect(() => {
-//     if (!status || status.status === "done" || status.status === "failed") return;
-//     const timer = setInterval(() => setElapsed((e) => e + 1), 1000);
-//     return () => clearInterval(timer);
-//   }, [status]);
+    const runPoll = async () => {
+      if (cancelled) return;
 
-  // Animate steps
+      const result = await poll();
+
+      if (!cancelled && result?.status !== "done" && result?.status !== "failed") {
+        timeoutId = setTimeout(runPoll, POLL_INTERVAL);
+      }
+    };
+
+    
+    timeoutId = setTimeout(runPoll, 0);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
+  }, [poll]);
+
+  useEffect(() => {
+    if (!status || status.status === "done" || status.status === "failed") return;
+    const timer = setInterval(() => setElapsed((e) => e + 1), 1000);
+    return () => clearInterval(timer);
+  }, [status?.status]);
+
   useEffect(() => {
     if (!status || status.status === "done" || status.status === "failed") return;
     const step = setInterval(() => {
       setActiveStep((s) => Math.min(s + 1, pipelineSteps.length - 1));
     }, 5000);
     return () => clearInterval(step);
-  }, [status]);
+  }, [status?.status]);
 
   const formatElapsed = (s: number) => {
     const m = Math.floor(s / 60);
@@ -67,7 +77,6 @@ export default function JobStatusTracker({ jobId, onReset }: Props) {
     return m > 0 ? `${m}m ${sec}s` : `${sec}s`;
   };
 
-  // ─── Poll error ────────────────────────────────────────────────────────────
   if (pollError) {
     return (
       <>
@@ -87,7 +96,6 @@ export default function JobStatusTracker({ jobId, onReset }: Props) {
     );
   }
 
-  // ─── Initial load ─────────────────────────────────────────────────────────
   if (!status) {
     return (
       <>
@@ -102,7 +110,6 @@ export default function JobStatusTracker({ jobId, onReset }: Props) {
     );
   }
 
-  // ─── Failed ───────────────────────────────────────────────────────────────
   if (status.status === "failed") {
     return (
       <>
@@ -124,7 +131,6 @@ export default function JobStatusTracker({ jobId, onReset }: Props) {
     );
   }
 
-  // ─── Done ─────────────────────────────────────────────────────────────────
   if (status.status === "done" && status.downloadUrl) {
     return (
       <>
@@ -159,12 +165,10 @@ export default function JobStatusTracker({ jobId, onReset }: Props) {
     );
   }
 
-  // ─── Processing ───────────────────────────────────────────────────────────
   return (
     <>
       <ApStyles />
       <div className="ap-tracker-processing">
-        {/* Header */}
         <div className="ap-tracker-proc-header">
           <div className="ap-tracker-proc-icon">
             <Loader2 size={18} color="#4F46E5" className="ap-spin" />
@@ -175,13 +179,15 @@ export default function JobStatusTracker({ jobId, onReset }: Props) {
           </div>
         </div>
 
-        {/* Pipeline steps */}
         <div className="ap-tracker-steps">
           {pipelineSteps.map((s, i) => {
             const isDone = i < activeStep || status.status === "done";
             const isActive = i === activeStep && status.status !== "done";
             return (
-              <div key={i} className={`ap-tracker-step${isDone ? " done" : ""}${isActive ? " active" : ""}`}>
+              <div
+                key={i}
+                className={`ap-tracker-step${isDone ? " done" : ""}${isActive ? " active" : ""}`}
+              >
                 <div className="ap-tracker-step-dot">
                   {isDone ? (
                     <CheckCircle2 size={16} color="#10B981" />
@@ -200,11 +206,12 @@ export default function JobStatusTracker({ jobId, onReset }: Props) {
           })}
         </div>
 
-        {/* Progress bar */}
         <div className="ap-tracker-progress-wrap">
           <div
             className="ap-tracker-progress-bar"
-            style={{ width: `${Math.min(((activeStep + 1) / pipelineSteps.length) * 100, 95)}%` }}
+            style={{
+              width: `${Math.min(((activeStep + 1) / pipelineSteps.length) * 100, 95)}%`,
+            }}
           />
         </div>
 
@@ -297,12 +304,8 @@ function ApStyles() {
         border: 1.5px solid #E8EAF0; background: #FAFAFA;
         transition: border-color 0.3s, background 0.3s;
       }
-      .ap-tracker-step.active {
-        border-color: #C7D2FE; background: #EEF2FF;
-      }
-      .ap-tracker-step.done {
-        border-color: #A7F3D0; background: #F0FDF9;
-      }
+      .ap-tracker-step.active { border-color: #C7D2FE; background: #EEF2FF; }
+      .ap-tracker-step.done  { border-color: #A7F3D0; background: #F0FDF9; }
       .ap-tracker-step-dot {
         width: 22px; height: 22px; display: flex;
         align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
@@ -313,15 +316,15 @@ function ApStyles() {
       }
       @keyframes ap-pulse {
         0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.4; transform: scale(0.7); }
+        50%       { opacity: 0.4; transform: scale(0.7); }
       }
       .ap-step-empty {
         width: 10px; height: 10px; border-radius: 50%;
         border: 2px solid #CBD5E1;
       }
       .ap-tracker-step-label { font-size: 0.875rem; font-weight: 600; color: #1E2D40; }
-      .ap-tracker-step-sub { font-size: 0.78rem; color: #94A3B8; margin-top: 2px; }
-      .ap-tracker-step.done .ap-tracker-step-label { color: #059669; }
+      .ap-tracker-step-sub   { font-size: 0.78rem; color: #94A3B8; margin-top: 2px; }
+      .ap-tracker-step.done   .ap-tracker-step-label { color: #059669; }
       .ap-tracker-step.active .ap-tracker-step-label { color: #4F46E5; }
 
       .ap-tracker-progress-wrap {

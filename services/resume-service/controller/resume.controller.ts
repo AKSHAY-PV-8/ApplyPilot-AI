@@ -34,8 +34,12 @@ export const uploadResume = async (req: Request, res: Response) => {
             },
         })
         console.log("file successfully uploader");
-        res.json({ success: true, fileId: resumeFile.id });
-
+        res.json({
+            success: true,
+            fileId: resumeFile.id,
+            s3Key: resumeFile.s3Key,
+            originalName: resumeFile.originalName,
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Upload failed" });
