@@ -10,7 +10,7 @@ export function CtaSection() {
             <p className={styles.desc}>
                 Join thousands of candidates who are applying smarter and getting hired faster with ApplyPilot AI.
             </p>
-            <Button href="/register" variant="white" size="lg">Get started — it&apos;s free</Button>
+            <Button href="/dashboard" variant="white" size="lg">Get started — it&apos;s free</Button>
 
         </section>
 

@@ -16,7 +16,7 @@ export function HeroSection() {
         </h1>
         <p className={`${styles.desc}${animating ? ` ${styles.fade}` : ""}`}>{slide.desc}</p>
         <div className={styles.cta}>
-          <Button href="/register" size="lg">Start for free →</Button>
+          <Button href="/dashboard" size="lg">Start for free →</Button>
           <Button href="#features" variant="outline" size="lg">See how it works</Button>
         </div>
         <div className={styles.dots}>
