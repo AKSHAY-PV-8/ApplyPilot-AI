@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model GenerationJob {
+  id             String   @id @default(uuid())
+  userId         String
+  resumeFileId   String                        
+  jobDescription String
+  status         String   @default("pending")  
+  outputS3Key    String?                        
+  errorMessage   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

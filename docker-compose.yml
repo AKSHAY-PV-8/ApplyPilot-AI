@@ -80,6 +80,32 @@ services:
     networks:
       - applypilot-network
 
+  generation-service:
+    build:
+      context: ./services/generation-service
+      dockerfile: Dockerfile
+    container_name: applypilot-generation
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${GENERATION_DATABASE_URL}
+      MINIO_HOST: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET_RESUMES: resumes
+      MINIO_BUCKET_GENERATED: generated-resumes
+      JWT_SECRET: ${JWT_SECRET}
+      GROQ_API_KEY: ${GROQ_API_KEY}  
+      PORT: 5003
+    ports:
+      - "5003:5003"
+    depends_on:
+      - postgres
+      - minio
+    networks:
+      - applypilot-network
+
+
   api-gateway:
     build:
       context: ./services/api-gateway
@@ -89,6 +115,7 @@ services:
     environment:
       AUTH_SERVICE_URL: http://auth-service:5001
       RESUME_SERVICE_URL: http://resume-service:5002
+      GENERATE_SERVICE_URL: http://generate-service:5003
       JWT_SECRET: ${JWT_SECRET}
       PORT: 5000
     ports:

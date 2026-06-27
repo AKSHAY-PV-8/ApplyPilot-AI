@@ -58,4 +58,26 @@ app.use(
     })
 )
 
+app.use(
+    "/api/generate",
+    createProxyMiddleware({
+        target: "http://localhost:5003",//generate-service
+        changeOrigin: true,
+        cookieDomainRewrite: "localhost",
+        on: {
+            proxyReq: (proxyReq, req, res) => {
+                console.log("Proxy generate-service Request Sent");
+            },
+
+            proxyRes: (proxyRes, req, res) => {
+                console.log("Proxy generate-service Response Received");
+            },
+
+            error: (err, req, res) => {
+                console.log("Proxy Error", err)
+            }
+        }
+    })
+)
+
 app.listen(5000, () => console.log(`API_Gateway is running on 5000`));
