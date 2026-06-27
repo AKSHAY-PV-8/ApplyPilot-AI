@@ -16,7 +16,7 @@ app.use(cors({
 app.use(
     "/api/auth",
     createProxyMiddleware({
-        target: "http://localhost:5001", //localhost, auth-service
+        target: "http://localhost:5001", 
         changeOrigin: true,
         cookieDomainRewrite: "localhost",
         on: {
@@ -39,7 +39,7 @@ app.use(
 app.use(
     "/api/resume",
     createProxyMiddleware({
-        target: "http://localhost:5002",//resume-service
+        target: "http://localhost:5002",
         changeOrigin: true,
         cookieDomainRewrite: "localhost",
         on: {
@@ -61,7 +61,7 @@ app.use(
 app.use(
     "/api/generate",
     createProxyMiddleware({
-        target: "http://localhost:5003",//generate-service
+        target: "http://localhost:5003",
         changeOrigin: true,
         cookieDomainRewrite: "localhost",
         on: {
