@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getUser } from "@/services/auth";
+import { getUser } from "@/services/authApi";
 
 export interface CurrentUser { id: string; name: string; email: string; }
 

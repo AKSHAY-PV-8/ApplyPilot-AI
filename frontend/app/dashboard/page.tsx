@@ -1,19 +1,18 @@
+// features/dashboard/DashboardPage.tsx  (replace your current file)
 "use client";
 
 import { useState } from "react";
-import {
-  Upload,
-  FileText,
-  Sparkles,
-  Loader2,
-  ChevronRight,
-  ArrowLeft,
-} from "lucide-react";
-// import { resumeApi, generateApi, ResumeFile } from "@/lib/api";
-
-// import { useAuth } from "@/context/AuthContext";
+import { Upload, FileText, Sparkles, Loader2, ChevronRight, ArrowLeft } from "lucide-react";
 import FileDropzone from "@/features/dashboard/Filedropzone";
 import JobStatusTracker from "@/features/dashboard/Jobstatustracker";
+import { resumeApi } from "@/services/resumeApi";
+import { generateApi } from "@/services/generateApi";
+
+interface UploadedFile {
+  id: string;
+  s3Key: string;         
+  originalName: string;  
+}
 
 type Step = "upload" | "describe" | "generating";
 
@@ -24,22 +23,17 @@ const steps = [
 ] as const;
 
 export default function DashboardPage() {
-//   const { user } = useAuth();
-
   const [step, setStep] = useState<Step>("upload");
 
-  // Upload step
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-//   const [uploadedFile, setUploadedFile] = useState<ResumeFile | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [uploadError, setUploadError] = useState("");
 
-  // Describe step
   const [jobDescription, setJobDescription] = useState("");
   const [generating, setGenerating] = useState(false);
   const [generateError, setGenerateError] = useState("");
 
-  // Generation step
   const [jobId, setJobId] = useState<string | null>(null);
 
   const handleUpload = async () => {
@@ -47,8 +41,12 @@ export default function DashboardPage() {
     setUploadError("");
     setUploading(true);
     try {
-    //   const res = await resumeApi.upload(file);
-    //   setUploadedFile(res.data.file);
+      const res = await resumeApi.upload(file);
+      setUploadedFile({
+        id: res.data.fileId,
+        s3Key: "",          
+        originalName: file.name,
+      });
       setStep("describe");
     } catch (err: unknown) {
       const msg =
@@ -61,35 +59,35 @@ export default function DashboardPage() {
   };
 
   const handleGenerate = async () => {
-    // if (!uploadedFile || !jobDescription.trim()) return;
-    // setGenerateError("");
-    // setGenerating(true);
-    // try {
-    //   const res = await generateApi.start({
-    //     resumeFileId: uploadedFile.id,
-    //     s3Key: uploadedFile.s3Key,
-    //     jobDescription: jobDescription.trim(),
-    //   });
-    //   setJobId(res.data.jobId);
-    //   setStep("generating");
-    // } catch (err: unknown) {
-    //   const msg =
-    //     (err as { response?: { data?: { message?: string } } })?.response?.data
-    //       ?.message ?? "Failed to start generation.";
-    //   setGenerateError(msg);
-    // } finally {
-    //   setGenerating(false);
-    // }
+    if (!uploadedFile || !jobDescription.trim()) return;
+    setGenerateError("");
+    setGenerating(true);
+    try {
+      const res = await generateApi.start({
+        resumeFileId: uploadedFile.id,
+        s3Key: uploadedFile.s3Key,
+        jobDescription: jobDescription.trim(),
+      });
+      setJobId(res.data.jobId);
+      setStep("generating");
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ?? "Failed to start generation.";
+      setGenerateError(msg);
+    } finally {
+      setGenerating(false);
+    }
   };
 
   const handleReset = () => {
-    // setStep("upload");
-    // setFile(null);
-    // setUploadedFile(null);
-    // setJobId(null);
-    // setJobDescription("");
-    // setUploadError("");
-    // setGenerateError("");
+    setStep("upload");
+    setFile(null);
+    setUploadedFile(null);
+    setJobId(null);
+    setJobDescription("");
+    setUploadError("");
+    setGenerateError("");
   };
 
   const stepIndex = steps.findIndex((s) => s.id === step);
@@ -259,28 +257,25 @@ export default function DashboardPage() {
       <div className="ap-dash-page">
         <div className="ap-dash-inner">
 
-          {/* Welcome */}
           <div className="ap-dash-welcome">
             <h1 className="ap-dash-greeting">
-              {/* Hi {user?.name?.split(" ")[0] ?? "there"} 👋 */}
+              {/* Hi {user?.name?.split(" ")[0] ?? "there"} */}
             </h1>
             <p className="ap-dash-sub">
               Tailor your resume to any job in seconds with AI.
             </p>
           </div>
 
-          {/* Stepper */}
           <div className="ap-stepper">
             {steps.map((s, i) => (
               <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <div
-                  className={`ap-stepper-item ${
-                    i === stepIndex
+                  className={`ap-stepper-item ${i === stepIndex
                       ? "active"
                       : i < stepIndex
-                      ? "completed"
-                      : "pending"
-                  }`}
+                        ? "completed"
+                        : "pending"
+                    }`}
                 >
                   <s.icon size={13} />
                   <span>{s.label}</span>
@@ -292,7 +287,6 @@ export default function DashboardPage() {
             ))}
           </div>
 
-          {/* ── Step 1: Upload ────────────────────────────────────────── */}
           {step === "upload" && (
             <div className="ap-dash-card">
               <div className="ap-card-title">Upload your resume</div>
@@ -303,7 +297,7 @@ export default function DashboardPage() {
               {uploadError && (
                 <div className="ap-error-msg">
                   <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                   </svg>
                   {uploadError}
                 </div>
@@ -322,15 +316,14 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* ── Step 2: Job description ───────────────────────────────── */}
           {step === "describe" && (
             <div className="ap-dash-card">
               <div className="ap-card-title">Paste the job description</div>
               <p className="ap-card-sub">
-                AI will tailor your resume to match exactly what they're looking for.
+                AI will tailor your resume to match exactly what they&apos;re looking for.
               </p>
 
-              {/* {uploadedFile && (
+              {uploadedFile && (
                 <div className="ap-uploaded-badge">
                   <FileText size={15} color="#10B981" />
                   <span className="ap-uploaded-badge-label">
@@ -338,7 +331,7 @@ export default function DashboardPage() {
                   </span>
                   <span className="ap-uploaded-badge-check">uploaded ✓</span>
                 </div>
-              )} */}
+              )}
 
               <label htmlFor="jd" className="ap-label">
                 Job description
@@ -356,7 +349,7 @@ export default function DashboardPage() {
               {generateError && (
                 <div className="ap-error-msg">
                   <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                   </svg>
                   {generateError}
                 </div>
@@ -380,7 +373,6 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* ── Step 3: Generating ────────────────────────────────────── */}
           {step === "generating" && jobId && (
             <div className="ap-dash-card">
               <div className="ap-card-title">Generating your resume</div>
@@ -391,12 +383,11 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Tip */}
           {step !== "generating" && (
             <div className="ap-tip-card">
               <div className="ap-tip-title">
                 <svg width="14" height="14" fill="#F59E0B" viewBox="0 0 24 24">
-                  <path d="M12 2a7 7 0 015.292 11.584l.208.416H16v2h-2v2h-4v-2H8v-2H6.5l.208-.416A7 7 0 0112 2zm1 14v1h-2v-1h2zm0-2v-1.101A3 3 0 0011 10V9h2v1a1 1 0 101 1v1.899A3.001 3.001 0 0013 14z"/>
+                  <path d="M12 2a7 7 0 015.292 11.584l.208.416H16v2h-2v2h-4v-2H8v-2H6.5l.208-.416A7 7 0 0112 2zm1 14v1h-2v-1h2zm0-2v-1.101A3 3 0 0011 10V9h2v1a1 1 0 101 1v1.899A3.001 3.001 0 0013 14z" />
                 </svg>
                 Pro tip
               </div>
